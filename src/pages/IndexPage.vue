@@ -29,7 +29,7 @@
     </div>
 
     <!-- Serviços -->
-    <div align="right">
+    <div align="center">
       <div style="font-size: large;" class="text-bold q-py-xl">
         Serviços que encontramos em: Santa Maria - RS <!-- Substituir por variável que armazene a localização do usuário -->
       </div>
