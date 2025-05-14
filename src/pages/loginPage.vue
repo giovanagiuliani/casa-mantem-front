@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="flex items-center justify-center">
-    <div style="width: 40vh;">
+    <div style="width: 60vh;">
       <q-card class="my-card">
         <q-card-section>
           <div align="center" class="text-h6">

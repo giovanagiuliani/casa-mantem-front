@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="flex items-center justify-center">
-    <div style="width: 40vh;">
+    <div style="width: 60vh;">
       <q-card class="my-card">
         <q-card-section>
           <div align="center" class="text-h6">
@@ -55,7 +55,7 @@
             </div>
 
            <div class="q-pb-lg" align="center">
-            <q-btn color="primary" label="Entrar" @click="''" style="border-radius: 10px;" />
+            <q-btn color="primary" label="Entrar" @click="tipoLogin === 1 ? cadastrarCliente() : cadastrarPrestador()" style="border-radius: 10px;" />
           </div>
 
           <div align="center" class="q-py-lg">
@@ -108,17 +108,47 @@ export default defineComponent({
   methods: {
     loginPage () {
       this.$router.push('/login')
-    }
+    },
 
-    // async buscaUFs () {
-    //   try {
-    //     await this.$api.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados?orderBy=nome').then(response => {
-    //       console.log(response)
-    //     })
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // }
+    limpaCampos () {
+      this.dadosCliente = {
+        nmcliente: '',
+        nrcelular: '',
+        emailcliente: '',
+        senhacliente: '',
+        confirmasenha: ''
+      }
+      this.dadosPrestador = {
+        nmprestador: '',
+        cpfprestador: '',
+        emailprestador: '',
+        cidadeprestador: '',
+        ufprestador: '',
+        telefoneprestador: '',
+        senhaprestador: '',
+        confirmasenha: ''
+      }
+    },
+
+    async cadastrarCliente () {
+      try {
+        const dados = { ...this.dadosCliente }
+
+        await this.$api.post('/clientes/cadastrarCliente', dados).then(response => {
+          this.$q.notify({
+            colot: 'green',
+            position: 'top',
+            message: 'Conta criada com sucesso! Faça seu login!',
+            timeout: 35000,
+            icon: 'fas fa-check'
+          })
+          this.limpaCampos()
+          this.$router.push('/login')
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 })
 </script>
