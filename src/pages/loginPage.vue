@@ -37,8 +37,12 @@
             </q-input>
           </div>
 
+          <div v-if="loading">
+            <q-linear-progress indeterminate color="primary" class="q-mb-lg" />
+          </div>
+
           <div class="q-pb-lg" align="center">
-            <q-btn color="primary" label="Entrar" @click="''" style="border-radius: 10px;" />
+            <q-btn color="primary" label="Entrar" @click="tipoLogin === 1 ? loginCliente() : loginPrestador()" style="border-radius: 10px;" />
           </div>
 
           <div align="center" class="q-py-lg">
@@ -66,6 +70,7 @@ export default defineComponent({
   data () {
     return {
       tipoLogin: 1,
+      loading: false,
       verSenha: false,
       dadosCliente: {
         emailcliente: '',
@@ -80,6 +85,39 @@ export default defineComponent({
   methods: {
     criarContaPage () {
       this.$router.push('/criaConta')
+    },
+
+    async loginCliente () {
+      this.loading = true
+      try {
+        const dados = { ...this.dadosCliente }
+        await this.$api.post('/clientes/loginCliente', dados).then(response => {
+          console.log(response)
+          if (response.data === null) {
+            this.$q.notify({
+              color: 'red',
+              position: 'top',
+              message: 'E-mail ou senha inválidos!',
+              timeout: 3500,
+              icon: 'fas fa-times'
+            })
+          } else {
+            this.$q.sessionStorage.setItem('token', response.data.token.token)
+            this.$q.sessionStorage.setItem('nome', response.data.nmcliente)
+            this.$q.notify({
+              color: 'green',
+              position: 'top',
+              message: 'Login efetuado com sucesso!',
+              timeout: 3500,
+              icon: 'fas fa-check'
+            })
+            this.$router.push('/')
+          }
+          this.loading = false
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 })

@@ -5,6 +5,16 @@
           <div style="width: 100%;">
             <img src="../../public/Logo_CasaMantem.png" class="cursor-pointer" @click="redirect()" alt="" :height="$q.screen.xs ? '50px' : '70px'">
           </div>
+          <div v-if="token && (pagina !== '/login' || pagina !== '/criaConta')" class="flex no-wrap">
+            <div>
+              Olá, {{ this.nmcliente }}!
+            </div>
+            <div>
+              <q-btn color="primary" style="border-radius: 10px;" @click="''">
+                <q-icon name="fas fa-user" size="18px" />
+              </q-btn>
+            </div>
+          </div>
           <div v-if="!token && pagina === '/'" style="display: flex; position: absolute; right: 0;" class="q-pr-md">
             <q-btn color="primary" no-caps class="q-px-md" style="border-radius: 10px;" to="/login" @click="recuperaPagina()">
               <q-icon name="fas fa-user" size="18px" />
@@ -34,7 +44,8 @@ export default defineComponent({
 
   data () {
     return {
-      token: ''
+      token: '',
+      nmcliente: ''
     }
   },
   computed: {
@@ -45,6 +56,7 @@ export default defineComponent({
   methods: {
     recuperaToken () {
       this.token = this.$q.sessionStorage.getItem('token')
+      this.nmcliente = this.$q.sessionStorage.getItem('nome')
     },
     recuperaPagina () {
       return this.$route.path

@@ -19,43 +19,59 @@
 
           <!-- Formulário Cliente -->
            <div class="q-gutter-md q-py-lg" v-if="tipoLogin === 1">
-            <q-input v-model="dadosCliente.nmcliente" filled dense type="text" label="Digite seu nome completo..." />
-            <q-input v-model="dadosCliente.nrcelular" filled dense type="text" label="Digite seu e-mail..." />
-            <q-input v-model="dadosCliente.emailcliente" filled dense type="email" label="Digite seu número de celular..." />
-            <q-input v-model="dadosCliente.senhacliente" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha..." >
+            <q-input v-model="dadosCliente.nmcliente" filled dense type="text" label="Digite seu nome completo...">
+              <template #label>
+                Digite seu nome completo... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-input v-model="dadosCliente.emailcliente" filled dense type="email" label="Digite seu e-mail...">
+              <template #label>
+                Digite seu e-mail... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-input v-model="dadosCliente.senhacliente" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha..." reactive-rules :rules="[ val => val === dadosCliente.confirmasenha || 'Senhas não coincidem.' ]" hide-bottom-space>
+              <template #label>
+                Digite sua senha... <span class="text-red">*</span>
+              </template>
               <template #append>
                 <q-btn color="primary" flat size="sm" :icon="versenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="versenha = !versenha" style="border-radius: 10px;" />
               </template>
             </q-input>
-            <q-input v-model="dadosCliente.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha...">
+            <q-input v-model="dadosCliente.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha..." reactive-rules :rules="[ val => val === dadosCliente.senhacliente || 'Senhas não coincidem.' ]" hide-bottom-space>
+              <template #label>
+                Confirme sua senha... <span class="text-red">*</span>
+              </template>
               <template #append>
                 <q-btn color="primary" flat size="sm" :icon="verconfirmasenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="verconfirmasenha = !verconfirmasenha" style="border-radius: 10px;" />
               </template>
             </q-input>
-           </div>
-
-           <!-- Formulário Prestador -->
-            <div class="q-gutter-md q-py-lg" v-if="tipoLogin === 2">
-              <q-input v-model="dadosPrestador.nmprestador" filled dense type="text" label="Digite seu nome completo..." />
-              <q-input v-model="dadosPrestador.cpfprestador" filled dense type="text" mask="###.###.###-##" unmasked-value label="Digite seu CPF..." />
-              <q-input v-model="dadosPrestador.emailprestador" filled dense type="email" label="Digite seu e-mail..." />
-              <q-input v-model="dadosPrestador.telefoneprestador" filled dense type="text" label="Digite seu telefone para contato..." />
-              <q-input v-model="dadosPrestador.ufprestador" filled dense type="text" label="Selecione seu estado..." />
-              <q-input v-model="dadosPrestador.cidadeprestador" filled dense type="text" label="Selecione sua cidade..." />
-              <q-input v-model="dadosPrestador.senhaprestador" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha..." >
-              <template #append>
-                <q-btn color="primary" flat size="sm" :icon="versenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="versenha = !versenha" style="border-radius: 10px;" />
-              </template>
-            </q-input>
-              <q-input v-model="dadosPrestador.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha...">
-              <template #append>
-                <q-btn color="primary" flat size="sm" :icon="verconfirmasenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="verconfirmasenha = !verconfirmasenha" style="border-radius: 10px;" />
-              </template>
-            </q-input>
+            <div class="text-red" style="font-size: smaller;">
+              * Campos obrigatórios.
             </div>
+          </div>
 
-           <div class="q-pb-lg" align="center">
-            <q-btn color="primary" label="Entrar" @click="tipoLogin === 1 ? cadastrarCliente() : cadastrarPrestador()" style="border-radius: 10px;" />
+          <!-- Formulário Prestador -->
+          <div class="q-gutter-md q-py-lg" v-if="tipoLogin === 2">
+            <q-input v-model="dadosPrestador.nmprestador" filled dense type="text" label="Digite seu nome completo..." />
+            <q-input v-model="dadosPrestador.cpfprestador" filled dense type="text" mask="###.###.###-##" unmasked-value label="Digite seu CPF..." />
+            <q-input v-model="dadosPrestador.emailprestador" filled dense type="email" label="Digite seu e-mail..." />
+            <q-input v-model="dadosPrestador.telefoneprestador" filled dense type="text" mask="(##) # ####-####" label="Digite seu telefone para contato..." />
+            <q-input v-model="dadosPrestador.ufprestador" filled dense type="text" label="Selecione seu estado..." />
+            <q-input v-model="dadosPrestador.cidadeprestador" filled dense type="text" label="Selecione sua cidade..." />
+            <q-input v-model="dadosPrestador.senhaprestador" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha...">
+              <template #append>
+                <q-btn color="primary" flat size="sm" :icon="versenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="versenha = !versenha" style="border-radius: 10px;" />
+              </template>
+            </q-input>
+            <q-input v-model="dadosPrestador.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha...">
+              <template #append>
+                <q-btn color="primary" flat size="sm" :icon="verconfirmasenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="verconfirmasenha = !verconfirmasenha" style="border-radius: 10px;" />
+              </template>
+            </q-input>
+          </div>
+
+          <div class="q-pb-lg" align="center">
+            <q-btn color="primary" label="Cadastrar" @click="tipoLogin === 1 ? cadastrarCliente() : cadastrarPrestador()" style="border-radius: 10px;" />
           </div>
 
           <div align="center" class="q-py-lg">
@@ -113,7 +129,6 @@ export default defineComponent({
     limpaCampos () {
       this.dadosCliente = {
         nmcliente: '',
-        nrcelular: '',
         emailcliente: '',
         senhacliente: '',
         confirmasenha: ''
@@ -132,14 +147,19 @@ export default defineComponent({
 
     async cadastrarCliente () {
       try {
+        if (this.dadosCliente.nmcliente === '') return
+        if (this.dadosCliente.emailcliente === '') return
+        if (this.dadosCliente.senhacliente === '') return
+        if (this.dadosCliente.confirmasenha === '') return
+
         const dados = { ...this.dadosCliente }
 
         await this.$api.post('/clientes/cadastrarCliente', dados).then(response => {
           this.$q.notify({
-            colot: 'green',
+            color: 'green',
             position: 'top',
             message: 'Conta criada com sucesso! Faça seu login!',
-            timeout: 35000,
+            timeout: 3500,
             icon: 'fas fa-check'
           })
           this.limpaCampos()
