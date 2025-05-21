@@ -4,7 +4,7 @@
       <q-card class="my-card">
         <q-card-section>
           <div align="center" class="text-h6">
-            Criar Conta
+            Criar Conta {{  tipoLogin === 1 ? 'como Cliente' : 'como Prestador' }}
           </div>
 
           <!-- Escolha para Criar Conta -->
@@ -52,22 +52,56 @@
 
           <!-- Formulário Prestador -->
           <div class="q-gutter-md q-py-lg" v-if="tipoLogin === 2">
-            <q-input v-model="dadosPrestador.nmprestador" filled dense type="text" label="Digite seu nome completo..." />
-            <q-input v-model="dadosPrestador.cpfprestador" filled dense type="text" mask="###.###.###-##" unmasked-value label="Digite seu CPF..." />
-            <q-input v-model="dadosPrestador.emailprestador" filled dense type="email" label="Digite seu e-mail..." />
-            <q-input v-model="dadosPrestador.telefoneprestador" filled dense type="text" mask="(##) # ####-####" label="Digite seu telefone para contato..." />
-            <q-input v-model="dadosPrestador.ufprestador" filled dense type="text" label="Selecione seu estado..." />
-            <q-input v-model="dadosPrestador.cidadeprestador" filled dense type="text" label="Selecione sua cidade..." />
-            <q-input v-model="dadosPrestador.senhaprestador" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha...">
+            <q-input v-model="dadosPrestador.nmprestador" filled dense type="text" label="Digite seu nome completo...">
+              <template #label>
+                Digite seu nome completo... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-input v-model="dadosPrestador.cpfprestador" filled dense type="text" mask="###.###.###-##" unmasked-value label="Digite seu CPF...">
+              <template #label>
+                Digite seu CPF... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-input v-model="dadosPrestador.emailprestador" filled dense type="email" label="Digite seu e-mail...">
+              <template #label>
+                Digite seu e-mail... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-input v-model="dadosPrestador.celularprestador" filled dense type="text" mask="(##) # ####-####" label="Digite seu telefone para contato...">
+              <template #label>
+                Digite seu telefone para contato... <span class="text-red">*</span>
+              </template>
+            </q-input>
+            <q-checkbox v-model="dadosPrestador.whatsapp" dense label="Aceito receber mensagens no WhatsApp deste número." />
+            <q-select v-model="dadosPrestador.ufprestador" use-input dense filled maxlength="2" :options="opt_unidadesFederativas" label="Selecione seu estado...">
+                     <template #label>
+         Selecione seu estado... <span class="text-red">*</span>
+              </template>
+            </q-select>
+            <q-select v-model="dadosPrestador.cidadeprestador" use-input filled dense :options="opt_cidades" label="Selecione sua cidade...">
+              <template #label>
+                Selecione sua cidade... <span class="text-red">*</span>
+              </template>
+            </q-select>
+            <q-input v-model="dadosPrestador.senhaprestador" filled dense :type="versenha ? 'text' : 'password'" label="Digite sua senha..." reactive-rules :rules="[ val => val === dadosPrestador.confirmasenha || 'Senhas não coincidem.' ]" hide-bottom-space>
               <template #append>
                 <q-btn color="primary" flat size="sm" :icon="versenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="versenha = !versenha" style="border-radius: 10px;" />
               </template>
+              <template #label>
+                Digite sua senha... <span class="text-red">*</span>
+              </template>
             </q-input>
-            <q-input v-model="dadosPrestador.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha...">
+            <q-input v-model="dadosPrestador.confirmasenha" filled dense :type="verconfirmasenha ? 'text' : 'password'" label="Confirme sua senha..." reactive-rules :rules="[ val => val === dadosPrestador.senhaprestador || 'Senhas não coincidem.' ]" hide-bottom-space>
               <template #append>
                 <q-btn color="primary" flat size="sm" :icon="verconfirmasenha ? 'fas fa-eye' : 'fas fa-eye-slash'" @click="verconfirmasenha = !verconfirmasenha" style="border-radius: 10px;" />
               </template>
+              <template #label>
+                Confirme sua senha... <span class="text-red">*</span>
+              </template>
             </q-input>
+            <div class="text-red" style="font-size: smaller;">
+              * Campos obrigatórios.
+            </div>
           </div>
 
           <div class="q-pb-lg" align="center">
@@ -112,13 +146,15 @@ export default defineComponent({
         emailprestador: '',
         cidadeprestador: '',
         ufprestador: '',
-        telefoneprestador: '',
+        celularprestador: '',
         senhaprestador: '',
-        confirmasenha: ''
+        confirmasenha: '',
+        whatsapp: false
       },
       versenha: false,
       verconfirmasenha: false,
-      ufs: []
+      opt_cidades: [{ label: 'Santa Maria', value: 1 }],
+      opt_unidadesFederativas: [{ label: 'RS', value: 1 }]
     }
   },
   methods: {
@@ -139,7 +175,7 @@ export default defineComponent({
         emailprestador: '',
         cidadeprestador: '',
         ufprestador: '',
-        telefoneprestador: '',
+        celularprestador: '',
         senhaprestador: '',
         confirmasenha: ''
       }
@@ -155,6 +191,34 @@ export default defineComponent({
         const dados = { ...this.dadosCliente }
 
         await this.$api.post('/clientes/cadastrarCliente', dados).then(response => {
+          this.$q.notify({
+            color: 'green',
+            position: 'top',
+            message: 'Conta criada com sucesso! Faça seu login!',
+            timeout: 3500,
+            icon: 'fas fa-check'
+          })
+          this.limpaCampos()
+          this.$router.push('/login')
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async cadastrarPrestador () {
+      try {
+        if (this.dadosPrestador.nmprestador === '') return
+        if (this.dadosPrestador.cpfprestador === '') return
+        if (this.dadosPrestador.emailprestador === '') return
+        if (this.dadosPrestador.cidadeprestador === '') return
+        if (this.dadosPrestador.ufprestador === '') return
+        if (this.dadosPrestador.celularprestador === '') return
+        if (this.dadosPrestador.senhaprestador === '') return
+        if (this.dadosPrestador.confirmasenha === '') return
+
+        const dados = { ...this.dadosPrestador }
+        await this.$api.post('/prestadores/cadastrarPrestador', dados).then(response => {
           this.$q.notify({
             color: 'green',
             position: 'top',

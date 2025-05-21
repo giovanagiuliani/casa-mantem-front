@@ -4,7 +4,7 @@
       <q-card class="my-card">
         <q-card-section>
           <div align="center" class="text-h6">
-            Entrar
+            Entrar {{ tipoLogin === 1 ? 'como Cliente' : 'como Prestador' }}
           </div>
 
           <!-- Escolha para Login -->
@@ -63,6 +63,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { useAuthStore } from 'stores/auth'
 
 export default defineComponent({
   name: 'loginPage',
@@ -92,7 +93,6 @@ export default defineComponent({
       try {
         const dados = { ...this.dadosCliente }
         await this.$api.post('/clientes/loginCliente', dados).then(response => {
-          console.log(response)
           if (response.data === null) {
             this.$q.notify({
               color: 'red',
@@ -102,8 +102,38 @@ export default defineComponent({
               icon: 'fas fa-times'
             })
           } else {
-            this.$q.sessionStorage.setItem('token', response.data.token.token)
-            this.$q.sessionStorage.setItem('nome', response.data.nmcliente)
+            useAuthStore().login(response.data.token.token, response.data.nmcliente, this.$q)
+            this.$q.notify({
+              color: 'green',
+              position: 'top',
+              message: 'Login efetuado com sucesso!',
+              timeout: 3500,
+              icon: 'fas fa-check'
+            })
+            this.$router.push('/')
+          }
+          this.loading = false
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async loginPrestador () {
+      this.loading = true
+      try {
+        const dados = { ...this.dadosPrestador }
+        await this.$api.post('/prestadores/loginPrestador', dados).then(response => {
+          if (response.data === null) {
+            this.$q.notify({
+              color: 'red',
+              position: 'top',
+              message: 'E-mail ou senha inválidos!',
+              timeout: 3500,
+              icon: 'fas fa-times'
+            })
+          } else {
+            useAuthStore().login(response.data.token.token, response.data.nmprestador, this.$q)
             this.$q.notify({
               color: 'green',
               position: 'top',

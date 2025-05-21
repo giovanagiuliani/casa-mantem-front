@@ -5,17 +5,46 @@
           <div style="width: 100%;">
             <img src="../../public/Logo_CasaMantem.png" class="cursor-pointer" @click="redirect()" alt="" :height="$q.screen.xs ? '50px' : '70px'">
           </div>
-          <div v-if="token && (pagina !== '/login' || pagina !== '/criaConta')" class="flex no-wrap">
-            <div>
-              Olá, {{ this.nmcliente }}!
+
+          <!-- Logado -->
+          <div v-if="auth.token && (pagina !== '/login' && pagina !== '/criaConta')" style="display: flex; position: absolute; right: 0; align-items: center;" class="flex no-wrap q-pr-md">
+            <div class="q-pr-md">
+              Olá, {{ auth.nome }}!
             </div>
             <div>
-              <q-btn color="primary" style="border-radius: 10px;" @click="''">
-                <q-icon name="fas fa-user" size="18px" />
-              </q-btn>
+              <q-btn-dropdown dropdown-icon="fas fa-user" no-icon-animation color="primary" style="border-radius: 10px;" @click="''">
+                <q-list>
+                  <q-item clickable v-ripple @click="fnAcessaPerfil()">
+                    <q-item-section avatar class="q-pr-none">
+                      <q-icon color="accent" name="fas fa-user-gear" size="18px" />
+                    </q-item-section>
+                    <q-item-section style="margin-left: -15px;">Perfil</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar class="q-pr-none">
+                      <q-icon color="accent" name="fas fa-clipboard-list" size="18px" />
+                    </q-item-section>
+                    <q-item-section style="margin-left: -15px;">Serviços</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple>
+                    <q-item-section avatar class="q-pr-none">
+                      <q-icon color="accent" name="fas fa-star" size="18px" />
+                    </q-item-section>
+                    <q-item-section style="margin-left: -15px;">Favoritos</q-item-section>
+                  </q-item>
+                  <q-item clickable v-ripple @click="fnLogout()">
+                    <q-item-section avatar class="q-pr-none">
+                      <q-icon color="accent" name="fas fa-arrow-right-from-bracket" size="18px" />
+                    </q-item-section>
+                    <q-item-section style="margin-left: -15px;">Sair</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
             </div>
           </div>
-          <div v-if="!token && pagina === '/'" style="display: flex; position: absolute; right: 0;" class="q-pr-md">
+
+          <!-- Não logado -->
+          <div v-if="!auth.token && pagina === '/'" style="display: flex; position: absolute; right: 0;" class="q-pr-md">
             <q-btn color="primary" no-caps class="q-px-md" style="border-radius: 10px;" to="/login" @click="recuperaPagina()">
               <q-icon name="fas fa-user" size="18px" />
               <span v-if="!$q.screen.xs" class="q-pl-sm">Entrar/Cadastrar</span>
@@ -38,14 +67,19 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { useAuthStore } from 'stores/auth'
 
 export default defineComponent({
   name: 'MainLayout',
 
   data () {
+    return {}
+  },
+  setup () {
+    const auth = useAuthStore()
+
     return {
-      token: '',
-      nmcliente: ''
+      auth
     }
   },
   computed: {
@@ -54,20 +88,35 @@ export default defineComponent({
     }
   },
   methods: {
-    recuperaToken () {
-      this.token = this.$q.sessionStorage.getItem('token')
-      this.nmcliente = this.$q.sessionStorage.getItem('nome')
-    },
+    // recuperaToken () {
+    //   this.token = this.$q.sessionStorage.getItem('token')
+    //   this.nmcliente = this.$q.sessionStorage.getItem('nome')
+    // },
     recuperaPagina () {
       return this.$route.path
     },
+
     redirect () {
       this.$router.push('/')
+    },
+
+    fnLogout () {
+      this.auth.logout(this.$q)
+      this.$router.push('/')
+    },
+
+    fnAcessaPerfil () {
+      this.$router.push('/perfilCliente')
     }
   },
-  created () {
-    this.recuperaToken()
-    this.recuperaPagina()
+  mounted () {
+    this.auth.carregarSessao(this.$q)
   }
 })
 </script>
+
+<style>
+.q-btn .q-icon, .q-btn .q-spinner {
+  font-size: 18px;
+}
+</style>
