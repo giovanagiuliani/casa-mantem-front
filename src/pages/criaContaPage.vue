@@ -74,8 +74,8 @@
             </q-input>
             <q-checkbox v-model="dadosPrestador.whatsapp" dense label="Aceito receber mensagens no WhatsApp deste número." />
             <q-select v-model="dadosPrestador.ufprestador" use-input dense filled maxlength="2" :options="opt_unidadesFederativas" label="Selecione seu estado...">
-                     <template #label>
-         Selecione seu estado... <span class="text-red">*</span>
+              <template #label>
+                Selecione seu estado... <span class="text-red">*</span>
               </template>
             </q-select>
             <q-select v-model="dadosPrestador.cidadeprestador" use-input filled dense :options="opt_cidades" label="Selecione sua cidade...">

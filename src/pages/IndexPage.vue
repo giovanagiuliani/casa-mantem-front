@@ -34,8 +34,6 @@
         Serviços que encontramos em: Santa Maria - RS <!-- Substituir por variável que armazene a localização do usuário -->
       </div>
 
-      {{ $q.screen.name }}
-
       <div>
         <q-card :style="$q.screen.xs ? 'border-radius: 10px;' : 'width: 70%; border-radius: 10px;'" class="my-card">
           <q-card-section align="left">
@@ -115,7 +113,7 @@ export default defineComponent({
         id: 5,
         name: 'Luciana de Souza',
         avatar: 'avatar2.jpg',
-        servicos: ['Eletricista', 'Encanador'],
+        servicos: ['Eletricista', 'Encanador(a)'],
         cidade: 'Santa Maria',
         estado: 'RS',
         nota: 4.8,

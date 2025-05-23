@@ -102,14 +102,7 @@ export default defineComponent({
               icon: 'fas fa-times'
             })
           } else {
-            useAuthStore().login(response.data.token.token, response.data.nmcliente, this.$q)
-            this.$q.notify({
-              color: 'green',
-              position: 'top',
-              message: 'Login efetuado com sucesso!',
-              timeout: 3500,
-              icon: 'fas fa-check'
-            })
+            useAuthStore().login(response.data.token.token, response.data.nmcliente, response.data.tipologin, this.$q)
             this.$router.push('/')
           }
           this.loading = false
@@ -133,14 +126,7 @@ export default defineComponent({
               icon: 'fas fa-times'
             })
           } else {
-            useAuthStore().login(response.data.token.token, response.data.nmprestador, this.$q)
-            this.$q.notify({
-              color: 'green',
-              position: 'top',
-              message: 'Login efetuado com sucesso!',
-              timeout: 3500,
-              icon: 'fas fa-check'
-            })
+            useAuthStore().login(response.data.token.token, response.data.nmprestador, response.data.tipologin, this.$q)
             this.$router.push('/')
           }
           this.loading = false

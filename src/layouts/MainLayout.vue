@@ -8,13 +8,13 @@
 
           <!-- Logado -->
           <div v-if="auth.token && (pagina !== '/login' && pagina !== '/criaConta')" style="display: flex; position: absolute; right: 0; align-items: center;" class="flex no-wrap q-pr-md">
-            <div class="q-pr-md">
+            <div v-if="!$q.screen.xs" class="q-pr-md">
               Olá, {{ auth.nome }}!
             </div>
             <div>
               <q-btn-dropdown dropdown-icon="fas fa-user" no-icon-animation color="primary" style="border-radius: 10px;" @click="''">
                 <q-list>
-                  <q-item clickable v-ripple @click="fnAcessaPerfil()">
+                  <q-item clickable v-ripple @click="auth.tipologin === 1 ? fnAcessaPerfilCliente() : fnAcessaPerfilPrestador()">
                     <q-item-section avatar class="q-pr-none">
                       <q-icon color="accent" name="fas fa-user-gear" size="18px" />
                     </q-item-section>
@@ -53,7 +53,7 @@
           <div v-if="pagina != '/'" style="display: flex; position: absolute; left: 0;" class="q-pl-md">
             <q-btn color="primary" no-caps class="q-px-md" style="border-radius: 10px;" to="/" @click="recuperaPagina()">
               <q-icon name="fas fa-angle-left" size="18px" />
-              <span class="q-pl-sm">Voltar</span>
+              <span v-if="!$q.screen.xs" class="q-pl-sm">Voltar</span>
             </q-btn>
           </div>
       </q-toolbar>
@@ -105,8 +105,12 @@ export default defineComponent({
       this.$router.push('/')
     },
 
-    fnAcessaPerfil () {
+    fnAcessaPerfilCliente () {
       this.$router.push('/perfilCliente')
+    },
+
+    fnAcessaPerfilPrestador () {
+      this.$router.push('/perfilPrestador')
     }
   },
   mounted () {
