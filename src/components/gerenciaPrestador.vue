@@ -34,7 +34,7 @@
       </q-select>
 
       <div align="center">
-        <q-btn color="primary" icon="fas fa-check" label="Atualizar" no-caps style="border-radius: 10px;" @click="''" />
+        <q-btn color="primary" icon="fas fa-check" label="Atualizar" no-caps style="border-radius: 10px;" @click="atualizarDadosPrestador()" />
       </div>
     </div>
   </div>
@@ -62,6 +62,27 @@ export default {
       },
       opt_cidades: [],
       opt_unidadesFederativas: []
+    }
+  },
+  emits: ['fnDlgEditarPerfil'],
+  methods: {
+    async atualizarDadosPrestador () {
+      try {
+        const dados = { ...this.dadosPrestador }
+
+        await this.$api.post('/prestadores/atualizarDadosPrestador', dados, { headers: { authorization: this.$q.sessionStorage.getItem('token') } }).then(response => {
+          this.$q.notify({
+            color: 'green',
+            position: 'top',
+            timeout: 3500,
+            message: 'Perfil editado com sucesso!',
+            icon: 'fas fa-check'
+          })
+          this.$emit('fnDlgEditarPerfil', false)
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   mounted () {

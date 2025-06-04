@@ -5,14 +5,30 @@
         <q-card-section class="q-pt-xl">
           <div class="row">
             <div class="col-xs-12 col-sm-7" align="center">
-              <div class="q-pb-sm">
+              <div class="q-pb-sm cursor-pointer" @click="selectImage()">
                 <q-img
+                  v-if="imagemFinal === ''"
                   src="../../public/user-picture.jpg"
                   height="60%"
                   width="60%"
                   style="border-radius: 10px;"
                   no-spinner
                 />
+                <q-img
+                  v-if="imagemFinal !== ''"
+                  :src="imagemFinal"
+                  height="60%"
+                  width="60%"
+                  style="border-radius: 10px;"
+                  no-spinner
+                />
+                <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                style="display: none"
+                @change="onFileChange"
+              >
               </div>
 
               <div align="center">
@@ -213,14 +229,14 @@
     <q-dialog v-model="dlg_editarPerfilPrestador" persistent>
       <q-card style="width: 60%; border-radius: 10px;">
         <q-toolbar class="bg-primary text-white">
-          <q-icon name="fas fa-clipboard-list" size="18px" />
+          <q-icon name="fas fa-pen" size="18px" />
           <q-toolbar-title style="font-size: 16px;">
             Editar Perfil
           </q-toolbar-title>
           <q-btn flat round dense icon="fas fa-times" @click="dlg_editarPerfilPrestador = false; idEditarPrestador = 0" />
         </q-toolbar>
         <q-card-section>
-          <gerenciaPrestador :dadosEditarPrestador="dadosPrestador" />
+          <gerenciaPrestador :dadosEditarPrestador="dadosPrestador" @fnDlgEditarPerfil="fnDlgEditarPerfil" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -256,12 +272,27 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- Cortar Imagem -->
+    <q-dialog v-model="dlg_cortaImagem" persistent>
+        <div>
+          <div align="center">
+            <div ref="cropperContainer" style="width: 260px; height: 260px; border-radius: 15px;" />
+            <div class="q-pt-md q-gutter-md">
+              <q-btn flat color="white" label="Cancelar" @click="cancelarImagem()" />
+              <q-btn color="primary" label="Confirmar" @click="confirmarImagem()" />
+            </div>
+          </div>
+        </div>
+      </q-dialog>
+
   </q-page>
 </template>
 
 <script>
 import gerenciaServicos from 'src/components/gerenciaServicos.vue'
 import gerenciaPrestador from 'src/components/gerenciaPrestador.vue'
+import Cropper from 'cropperjs'
 
 export default {
   name: 'perfilPrestador',
@@ -276,15 +307,27 @@ export default {
         confirmaNovaSenha: ''
       },
       servicosOfertados: [],
+      cropper: null,
       verSenha: false,
-      verConfirmaSenha: false,
+      cropperAtivado: false,
       dlg_cadServico: false,
+      dlg_cortaImagem: false,
+      verConfirmaSenha: false,
       dlg_alterarSenha: false,
       dlg_editarServico: false,
       dlg_editarPerfilPrestador: false,
       dlg_confirmaExcluirServico: false,
       idEditarServico: 0,
-      idExcluirServico: 0
+      idExcluirServico: 0,
+      imagemSrc: '', // imagemSrc é a imagem que a pessoa selecionou e vai aparecer no croppper
+      imagemFinal: '' // imagemFinal é a imagem croppada, vai aparecer depois que a pessoa clicar em confirmar
+    }
+  },
+  watch: {
+    cropperAtivado: function () {
+      if (this.cropperAtivado === true) {
+        this.dlg_cortaImagem = true
+      }
     }
   },
   methods: {
@@ -318,10 +361,18 @@ export default {
       this.dlg_alterarSenha = false
     },
 
+    fnDlgEditarPerfil (val) {
+      this.dlg_editarPerfilPrestador = val
+      this.buscaDadosPrestador()
+    },
+
     async buscaDadosPrestador () {
       try {
         await this.$api.post('/prestadores/buscaDadosPrestador', {}, { headers: { authorization: this.$q.sessionStorage.getItem('token') } }).then(response => {
           this.dadosPrestador = { ...response.data }
+          if (response.data.fotoprestador) {
+            this.imagemFinal = response.data.fotoprestador
+          }
         })
       } catch (error) {
         console.log(error)
@@ -381,6 +432,99 @@ export default {
       } catch (error) {
         console.log(error)
       }
+    },
+
+    selectImage () {
+      this.$refs.fileInput.click()
+    },
+
+    onFileChange (event) {
+      const file = event.target.files[0]
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.imagemSrc = e.target.result
+          this.cropperAtivado = true
+          this.$nextTick(() => {
+            this.iniciarCropper()
+          })
+        }
+        reader.readAsDataURL(file)
+      }
+    },
+
+    iniciarCropper () {
+      console.log('entrou')
+      const container = this.$refs.cropperContainer
+
+      // Destroi o cropper anterior com segurança
+      if (this.cropper && typeof this.cropper.destroy === 'function') {
+        this.cropper.destroy()
+        this.cropper = null
+      }
+
+      container.innerHTML = '' // limpa container
+
+      const image = document.createElement('img')
+      image.src = this.imagemSrc
+
+      image.onload = () => {
+        container.appendChild(image)
+        this.cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1,
+          responsive: true
+        })
+        console.log(this.cropper)
+      }
+    },
+
+    confirmarImagem () {
+      if (this.cropper) {
+        const canvas = this.cropper.getCroppedCanvas({
+          width: 256,
+          height: 256
+        })
+
+        canvas.toBlob(async (blob) => {
+          const base64Image = await this.blobToBase64(blob)
+
+          this.imagemFinal = `data:image/jpeg;base64,${base64Image}`
+          this.dadosUsuario.foto = this.imagemFinal
+          this.dlg_cortaImagem = false
+          this.cropperAtivado = false
+
+          if (this.cropper && typeof this.cropper.destroy === 'function') {
+            this.cropper.destroy()
+            this.cropper = null
+          }
+        }, 'image/jpeg')
+      }
+    },
+
+    cancelarImagem () {
+      this.cropperAtivado = false
+
+      if (this.cropper && typeof this.cropper.destroy === 'function') {
+        this.cropper.destroy()
+        this.cropper = null
+      }
+
+      this.imagemSrc = this.dadosUsuario.foto
+      this.dlg_cortaImagem = false
+    },
+
+    async blobToBase64 (blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          const base64 = reader.result.split(',')[1]
+          resolve(base64)
+        }
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
     }
   },
   mounted () {

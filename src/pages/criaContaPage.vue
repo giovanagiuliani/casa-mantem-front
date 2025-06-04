@@ -73,12 +73,12 @@
               </template>
             </q-input>
             <q-checkbox v-model="dadosPrestador.whatsapp" dense label="Aceito receber mensagens no WhatsApp deste número." />
-            <q-select v-model="dadosPrestador.ufprestador" use-input dense filled maxlength="2" :options="opt_unidadesFederativas" label="Selecione seu estado...">
+            <q-select v-model="dadosPrestador.ufprestador" use-input dense filled maxlength="2" :options="opt_UFs" label="Selecione seu estado..." @filter="fnFiltraUFs" @update:model-value="buscaCidades()">
               <template #label>
                 Selecione seu estado... <span class="text-red">*</span>
               </template>
             </q-select>
-            <q-select v-model="dadosPrestador.cidadeprestador" use-input filled dense :options="opt_cidades" label="Selecione sua cidade...">
+            <q-select v-model="dadosPrestador.cidadeprestador" use-input filled dense :options="opt_cidades" label="Selecione sua cidade..." :disable="dadosPrestador.ufprestador === ''" @filter="fnFiltraCidades">
               <template #label>
                 Selecione sua cidade... <span class="text-red">*</span>
               </template>
@@ -153,8 +153,10 @@ export default defineComponent({
       },
       versenha: false,
       verconfirmasenha: false,
-      opt_cidades: [{ label: 'Santa Maria', value: 1 }],
-      opt_unidadesFederativas: [{ label: 'RS', value: 1 }]
+      cidades: [],
+      opt_UFs: [],
+      opt_cidades: [],
+      unidadesFederativas: []
     }
   },
   methods: {
@@ -179,6 +181,32 @@ export default defineComponent({
         senhaprestador: '',
         confirmasenha: ''
       }
+    },
+
+    fnFiltraUFs (val, update) {
+      if (val === '') {
+        update(() => {
+          this.opt_UFs = [...this.unidadesFederativas]
+        })
+        return
+      }
+
+      update(() => {
+        this.opt_UFs = this.unidadesFederativas.filter(v => v.label.includes(val.toUpperCase()))
+      })
+    },
+
+    fnFiltraCidades (val, update) {
+      if (val === '') {
+        update(() => {
+          this.opt_cidades = [...this.cidades]
+        })
+        return
+      }
+
+      update(() => {
+        this.opt_cidades = this.cidades.filter(v => (v.label.toUpperCase()).includes(val.toUpperCase()))
+      })
     },
 
     async cadastrarCliente () {
@@ -232,7 +260,39 @@ export default defineComponent({
       } catch (error) {
         console.log(error)
       }
+    },
+
+    async buscaUnidadesFederativas () {
+      try {
+        await this.$api.post('/prestadores/buscaUnidadesFederativas').then(response => {
+          this.unidadesFederativas = response.data.map((uf) => ({
+            label: uf.sigla,
+            value: uf.id
+          }))
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    async buscaCidades () {
+      try {
+        if (this.dadosPrestador.ufprestador === '') return
+        const dados = {}
+        dados.ufprestador = this.dadosPrestador.ufprestador?.value
+        await this.$api.post('/prestadores/buscaCidades', dados).then(response => {
+          this.cidades = response.data.map((cidade) => ({
+            label: cidade.nome,
+            value: cidade.id
+          }))
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
+  },
+  mounted () {
+    this.buscaUnidadesFederativas()
   }
 })
 </script>
