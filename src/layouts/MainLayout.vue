@@ -14,19 +14,25 @@
             <div>
               <q-btn-dropdown dropdown-icon="fas fa-user" no-icon-animation color="primary" style="border-radius: 10px;" @click="''">
                 <q-list>
+                  <q-item clickable v-ripple @click="redirect()">
+                    <q-item-section avatar class="q-pr-none">
+                      <q-icon color="accent" name="fas fa-home" size="18px" />
+                    </q-item-section>
+                    <q-item-section style="margin-left: -15px;">Início</q-item-section>
+                  </q-item>
                   <q-item clickable v-ripple @click="auth.tipologin === 1 ? fnAcessaPerfilCliente() : fnAcessaPerfilPrestador()">
                     <q-item-section avatar class="q-pr-none">
                       <q-icon color="accent" name="fas fa-user-gear" size="18px" />
                     </q-item-section>
                     <q-item-section style="margin-left: -15px;">Perfil</q-item-section>
                   </q-item>
-                  <q-item clickable v-ripple>
+                  <q-item clickable v-ripple @click="auth.tipologin === 1 ? fnAcessaServicosCliente() : fnAcessaServicosPrestador()">
                     <q-item-section avatar class="q-pr-none">
                       <q-icon color="accent" name="fas fa-clipboard-list" size="18px" />
                     </q-item-section>
                     <q-item-section style="margin-left: -15px;">Serviços</q-item-section>
                   </q-item>
-                  <q-item clickable v-ripple>
+                  <q-item v-if="auth.tipologin === 1" clickable v-ripple @click="fnAcessaFavoritosCliente()">
                     <q-item-section avatar class="q-pr-none">
                       <q-icon color="accent" name="fas fa-star" size="18px" />
                     </q-item-section>
@@ -111,6 +117,14 @@ export default defineComponent({
 
     fnAcessaPerfilPrestador () {
       this.$router.push('/perfilPrestador')
+    },
+
+    fnAcessaServicosCliente () {
+      this.$router.push('/servicosCliente')
+    },
+
+    fnAcessaFavoritosCliente () {
+      this.$router.push('/favoritosCliente')
     }
   },
   mounted () {

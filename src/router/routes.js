@@ -7,7 +7,9 @@ const routes = [
       { path: '/login', component: () => import('pages/loginPage.vue') },
       { path: '/criaConta', component: () => import('pages/criaContaPage.vue') },
       { path: '/perfilCliente', component: () => import('pages/perfilCliente.vue'), meta: { requiresAuth: true } },
-      { path: '/perfilPrestador', component: () => import('pages/perfilPrestador.vue'), meta: { requiresAuth: true } }
+      { path: '/perfilPrestador', component: () => import('pages/perfilPrestador.vue'), meta: { requiresAuth: true } },
+      { path: '/servicosCliente', component: () => import('pages/servicosCliente.vue'), meta: { requiresAuth: true } },
+      { path: '/favoritosCliente', component: () => import('pages/favoritosCliente.vue'), meta: { requiresAuth: true } }
     ]
   },
 

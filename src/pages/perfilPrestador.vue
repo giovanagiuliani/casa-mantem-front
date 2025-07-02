@@ -275,16 +275,16 @@
 
     <!-- Cortar Imagem -->
     <q-dialog v-model="dlg_cortaImagem" persistent>
-        <div>
-          <div align="center">
-            <div ref="cropperContainer" style="width: 260px; height: 260px; border-radius: 15px;" />
-            <div class="q-pt-md q-gutter-md">
-              <q-btn flat color="white" label="Cancelar" @click="cancelarImagem()" />
-              <q-btn color="primary" label="Confirmar" @click="confirmarImagem()" />
-            </div>
+      <div>
+        <div align="center">
+          <div ref="cropperContainer" style="width: 260px; height: 260px; border-radius: 15px;" />
+          <div class="q-pt-md q-gutter-md">
+            <q-btn flat color="white" label="Cancelar" @click="cancelarImagem()" />
+            <q-btn color="primary" label="Confirmar" @click="confirmarImagem()" />
           </div>
         </div>
-      </q-dialog>
+      </div>
+    </q-dialog>
 
   </q-page>
 </template>

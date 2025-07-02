@@ -216,7 +216,7 @@
             </div>
           </q-card-section>
         </q-card>
-       </q-dialog>
+      </q-dialog>
   </q-page>
 </template>
 
