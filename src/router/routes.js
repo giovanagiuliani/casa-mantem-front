@@ -9,7 +9,8 @@ const routes = [
       { path: '/perfilCliente', component: () => import('pages/perfilCliente.vue'), meta: { requiresAuth: true } },
       { path: '/perfilPrestador', component: () => import('pages/perfilPrestador.vue'), meta: { requiresAuth: true } },
       { path: '/servicosCliente', component: () => import('pages/servicosCliente.vue'), meta: { requiresAuth: true } },
-      { path: '/favoritosCliente', component: () => import('pages/favoritosCliente.vue'), meta: { requiresAuth: true } }
+      { path: '/favoritosCliente', component: () => import('pages/favoritosCliente.vue'), meta: { requiresAuth: true } },
+      { path: '/servicosPrestador', component: () => import('pages/servicosPrestador.vue'), meta: { requiresAuth: true } }
     ]
   },
 

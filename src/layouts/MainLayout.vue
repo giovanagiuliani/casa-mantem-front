@@ -125,6 +125,10 @@ export default defineComponent({
 
     fnAcessaFavoritosCliente () {
       this.$router.push('/favoritosCliente')
+    },
+
+    fnAcessaServicosPrestador () {
+      this.$router.push('/servicosPrestador')
     }
   },
   mounted () {

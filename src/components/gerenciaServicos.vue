@@ -4,6 +4,7 @@
       <div>
         <q-select v-model="dadosServicoOfertado.idservico" :options="opt_servicos" label="Escolha o serviço a ser ofertado..." filled dense use-input map-options />
       </div>
+
       <div align="left">
         <div class="q-pl-sm">
           Carga Horária
@@ -16,9 +17,57 @@
           Exemplo: {{ dadosServicoOfertado.tipocargahoraria === 1 ? 'às 14:00' : 'das 13:00 às 17:00' }}
         </div>
       </div>
+
       <div>
         <q-input v-model="dadosServicoOfertado.observacao" type="text" label="Digite uma observação (opcional)..." filled dense />
       </div>
+
+      <div align="left">
+        <div>
+          Carga Horária
+        </div>
+        <div>
+          <q-separator size="1px" color="black" />
+        </div>
+
+        <div class="q-pt-xs" style="font-size: smaller">
+          A plataforma sugere alguns horários padrões para começar, mas você pode <span class="text-bold">adicionar</span> novos horários e <span class="text-bold">remover</span> horários existentes.
+        </div>
+
+        <div class="q-pt-md">
+          <div class="text-bold">
+            Dias de semana
+          </div>
+          <div class="flex text-center">
+            <div v-for="(horarios1, index) in diasDeSemanaDefault" :key="index" class="q-px-sm q-py-xs q-ma-sm" style="border: 3px solid #8B61C2; border-radius: 10px; width: 100px;">
+              <span style="width: 100%;">{{ horarios1 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="q-pt-md">
+          <div class="text-bold">
+            Sábados
+          </div>
+          <div class="flex text-center">
+            <div v-for="(horarios2, index) in sabadosDefault" :key="index" class="q-px-sm q-py-xs q-ma-sm" style="border: 3px solid #8B61C2; border-radius: 10px; width: 100px;">
+              <span style="width: 100%;">{{ horarios2 }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="q-pt-md">
+          <div class="text-bold">
+            Domingos e Feriados
+          </div>
+          <div class="flex text-center">
+            <div v-for="(horarios3, index) in domingoferiDefault" :key="index" class="q-px-sm q-py-xs q-ma-sm" style="border: 3px solid #8B61C2; border-radius: 10px; width: 100px;">
+              <span style="width: 100%;">{{ horarios3 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div>
         <q-btn color="primary" icon="fas fa-check" :label="idEditar === 0 ? 'Cadastrar' : 'Atualizar'" style="border-radius: 10px;" @click="idEditar === 0 ? cadastrarServicoOfertado() : atualizarServicoOfertado()" />
       </div>
@@ -42,7 +91,13 @@ export default {
         observacao: '',
         tipocargahoraria: 1
       },
-      opt_servicos: []
+      opt_servicos: [],
+      sabadosDefault: ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00'],
+      domingoferiDefault: ['09:00', '10:00', '11:00'],
+      diasDeSemanaDefault: ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+      sabadosPrestador: [],
+      domingoferiPrestador: [],
+      diasDeSemanaPrestador: []
     }
   },
   emits: ['fnDlgServico'],

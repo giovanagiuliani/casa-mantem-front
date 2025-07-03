@@ -27,7 +27,7 @@
         <q-select behavior="menu" :style="$q.screen.xs ? '' : 'width: 80%;'" v-model="uf" :options="opt_UFs" label="Procure o estado..." @filter="fnFiltraUFs" @update:model-value="buscaCidades()" filled use-input />
       </div>
       <div :class="$q.screen.xs ? 'col-xs-12 col-sm-4 q-py-sm' : 'col-xs-12 col-sm-4 q-py-sm'" :align="$q.screen.xs ? '' : 'left'">
-        <q-select behavior="menu" :style="$q.screen.xs ? '' : 'width: 80%;'" v-model="cidade" :options="opt_cidades" label="Procure a cidade..." @filter="fnFiltraCidades" @update:model-value="formatLocalInterface(cidade.label, uf.nome)" :disable="uf === ''" filled use-input />
+        <q-select behavior="menu" :style="$q.screen.xs ? '' : 'width: 80%;'" v-model="cidade" :options="opt_cidades" label="Procure a cidade..." @filter="fnFiltraCidades" @update:model-value="formatLocalInterface(cidade?.label, uf.nome)" :disable="uf === ''" filled use-input />
       </div>
     </div>
 
